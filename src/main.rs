@@ -1,39 +1,60 @@
-use std::{
-    fs::File,
-    io::{self, BufRead},
-    path::Path,
-};
+mod days;
+mod input;
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
+use chrono::Datelike;
+use days::*;
+use std::env;
 
 pub fn main() -> () {
-    let mut elves = Vec::new();
-    let mut current_elf = Vec::new();
-    if let Ok(lines) = read_lines("./inputs/01") {
-        for line in lines {
-            if let Ok(l) = line {
-                if l.is_empty() {
-                    elves.push(current_elf.clone());
-                    current_elf = Vec::new();
-                } else {
-                    current_elf.push(l.parse::<i32>().unwrap())
+    let mut day = chrono::offset::Utc::now().date_naive().day();
+    let mut append = None;
+    let mut info = None;
+
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 1 {
+        let args = &args[1..];
+        for a in args {
+            if let Ok(n) = a.parse::<i64>() {
+                day = n as u32;
+            } else {
+                match a.as_str() {
+                    "-e" | "example" => {
+                        info = Some("Example ");
+                        append = Some("_example".to_string());
+                    }
+                    _ => { info = Some("Custom Input ") }
                 }
             }
         }
     }
-    let mut elf_values = Vec::<(usize, i32)>::new();
-    for (i, e) in elves.iter().enumerate() {
-        let value = e.iter().sum();
-        elf_values.push((i+1, value));
+
+    println!("Day {}: Running {}...\n", day, info.unwrap_or(""));
+
+    let file_path = create_file_path(day, append);
+
+    match day {
+        1 => {
+            day01::run(&file_path);
+        }
+        _ => {
+            if day > 25 {
+                panic!("There is no day {}.", day);
+            } else {
+                panic!("It is not day {} yet.", day);
+            }
+        }
     }
-    elf_values.sort_by(|(_, b), (_, a)| a.partial_cmp(b).unwrap());
-    println!("{}: {}", &elf_values[0].0, &elf_values[0].1);
-    let sum = elf_values[0].1 + elf_values[1].1 + elf_values[2].1;
-    println!("{}", sum); 
+}
+
+fn create_file_path(day: u32, append: Option<String>) -> String {
+    let day = if day < 10 {
+        format!("0{}", day)
+    } else {
+        day.to_string()
+    };
+    if let Some(a) = append {
+        format!("./inputs/{}{}", day, a)
+    } else {
+        format!("./inputs/{}", day)
+    }
 }
