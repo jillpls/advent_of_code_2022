@@ -22,7 +22,7 @@ pub fn main() -> () {
                         info = Some("Example ");
                         append = Some("_example".to_string());
                     }
-                    _ => { info = Some("Custom Input ") }
+                    _ => info = Some("Custom Input "),
                 }
             }
         }
@@ -35,6 +35,9 @@ pub fn main() -> () {
     match day {
         1 => {
             day01::run(&file_path);
+        }
+        2 => {
+            day02::run(&file_path);
         }
         _ => {
             if day > 25 {
