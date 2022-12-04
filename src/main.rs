@@ -39,6 +39,9 @@ pub fn main() -> () {
         2 => {
             day02::run(&file_path);
         }
+        3 => {
+            day03::run(&file_path);
+        }
         _ => {
             if day > 25 {
                 panic!("There is no day {}.", day);
