@@ -8,14 +8,12 @@ where
     let mut elves = Vec::new();
     let mut current_elf = Vec::new();
     if let Ok(lines) = read_lines(path) {
-        for line in lines {
-            if let Ok(l) = line {
-                if l.is_empty() {
-                    elves.push(current_elf.clone());
-                    current_elf = Vec::new();
-                } else {
-                    current_elf.push(l.parse::<i32>().unwrap())
-                }
+        for line in lines.flatten() {
+            if line.is_empty() {
+                elves.push(current_elf.clone());
+                current_elf = Vec::new();
+            } else {
+                current_elf.push(line.parse::<i32>().unwrap())
             }
         }
     }

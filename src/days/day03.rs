@@ -7,10 +7,8 @@ where
 {
     let mut backpacks: Vec<Vec<char>> = Vec::new();
     if let Ok(lines) = read_lines(path) {
-        for line in lines {
-            if let Ok(l) = line {
-                backpacks.push(l.chars().collect());
-            }
+        for line in lines.flatten() {
+            backpacks.push(line.chars().collect());
         }
     }
     let mut sum = 0;
@@ -19,7 +17,7 @@ where
         let c2 = &b[b.len() / 2..b.len()];
         for c in c1 {
             if c2.contains(c) {
-                let value = calc_score(&c);
+                let value = calc_score(c);
                 sum += value;
                 break;
             }

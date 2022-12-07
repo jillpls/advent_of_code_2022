@@ -14,20 +14,23 @@ where
             let splits = l.split(' ').collect::<Vec<&str>>();
             match splits[0] {
                 "$" => match splits[1] {
-                    "cd" => {
-                        match splits[2] {
-                            ".." => {
-                                if let Some(TreeNode::Dir(_, _, Some(parent), _)) = nodes.get(current_node) {
-                                    current_node = *parent;
-                                }
-                            }
-                            _ => {
-                                if let Some(TreeNode::Dir(_, v, _,_)) = nodes.get(current_node) {
-                                    current_node = v.get(&splits[2].to_string()).copied().unwrap_or(current_node);
-                                }
+                    "cd" => match splits[2] {
+                        ".." => {
+                            if let Some(TreeNode::Dir(_, _, Some(parent), _)) =
+                                nodes.get(current_node)
+                            {
+                                current_node = *parent;
                             }
                         }
-                    }
+                        _ => {
+                            if let Some(TreeNode::Dir(_, v, _, _)) = nodes.get(current_node) {
+                                current_node = v
+                                    .get(&splits[2].to_string())
+                                    .copied()
+                                    .unwrap_or(current_node);
+                            }
+                        }
+                    },
                     "ls" => {}
                     _ => {}
                 },
@@ -55,31 +58,29 @@ where
     calculate_sizes(&mut nodes, 0);
     let mut sum = 0;
     for n in &nodes {
-        if let TreeNode::Dir(_,_,_,s) = n {
+        if let TreeNode::Dir(_, _, _, s) = n {
             if *s <= 100000 {
-            sum += *s;
+                sum += *s;
             }
         }
     }
     println!("Part 1: {}", sum);
     let disk_space = 70000000;
     let needed = 30000000;
-    let available = if let TreeNode::Dir(_,_,_,s) = nodes[0] {
+    let available = if let TreeNode::Dir(_, _, _, s) = nodes[0] {
         disk_space - s
     } else {
         0
     };
     let mut smallest = disk_space;
     for n in &nodes {
-        if let TreeNode::Dir(_,_,_,s) = n {
-            if *s+available >= needed && *s < smallest {
+        if let TreeNode::Dir(_, _, _, s) = n {
+            if *s + available >= needed && *s < smallest {
                 smallest = *s;
             }
         }
     }
     println!("Part 2: {}", smallest);
-
-
 }
 
 enum TreeNode {
@@ -87,7 +88,7 @@ enum TreeNode {
     File(String, u64),
 }
 
-fn calculate_sizes(nodes: &mut [TreeNode], node_idx : usize) -> u64 {
+fn calculate_sizes(nodes: &mut [TreeNode], node_idx: usize) -> u64 {
     if let Some(TreeNode::File(_, s)) = nodes.get(node_idx) {
         return *s;
     }
@@ -97,14 +98,14 @@ fn calculate_sizes(nodes: &mut [TreeNode], node_idx : usize) -> u64 {
         if *s != 0 {
             return *s;
         }
-        for (_, v) in m {
+        for v in m.values() {
             children.push(*v);
         }
     }
     for c in children {
         sum += calculate_sizes(nodes, c);
     }
-    
+
     if let Some(TreeNode::Dir(_, _, _, s)) = nodes.get_mut(node_idx) {
         *s = sum;
     }
@@ -112,11 +113,11 @@ fn calculate_sizes(nodes: &mut [TreeNode], node_idx : usize) -> u64 {
 }
 
 #[allow(unused)]
-fn print_tree (nodes : &[TreeNode], start_node : usize, depth : u64) -> String {
+fn print_tree(nodes: &[TreeNode], start_node: usize, depth: u64) -> String {
     let mut final_str = String::new();
     if let Some(TreeNode::Dir(n, m, _, s)) = nodes.get(start_node) {
         println!("{} - {}", n, depth);
-        for _ in 0..depth*2 {
+        for _ in 0..depth * 2 {
             final_str.push(' ');
         }
         final_str.push_str(&format!("{} {}", n, s));
@@ -125,13 +126,11 @@ fn print_tree (nodes : &[TreeNode], start_node : usize, depth : u64) -> String {
         children.sort();
         println!("{:?}", children);
         for (_, i) in children {
-            if let Some(TreeNode::Dir(_,_,_,_)) = nodes.get(*i) {
-                final_str.push_str(&print_tree(nodes, *i, depth+1));
+            if let Some(TreeNode::Dir(_, _, _, _)) = nodes.get(*i) {
+                final_str.push_str(&print_tree(nodes, *i, depth + 1));
                 final_str.push('\n');
-                
             } else if let Some(TreeNode::File(n, s)) = nodes.get(*i) {
-
-                for _ in 0..(depth+1)*2 {
+                for _ in 0..(depth + 1) * 2 {
                     final_str.push(' ');
                 }
                 final_str.push_str(&format!("{} {}", n, s));

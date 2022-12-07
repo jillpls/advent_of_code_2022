@@ -5,7 +5,7 @@ use chrono::Datelike;
 use days::*;
 use std::env;
 
-pub fn main() -> () {
+pub fn main() {
     let mut day = chrono::offset::Utc::now().date_naive().day();
     let mut append = None;
     let mut info = None;

@@ -7,12 +7,9 @@ where
 {
     let mut instructions = Vec::new();
     if let Ok(lines) = read_lines(path) {
-        for line in lines {
-            if let Ok(l) = line {
-                let splits: Vec<&str> = l.split(" ").collect();
-
-                instructions.push((splits[0].to_string(), splits[1].to_string()));
-            }
+        for line in lines.flatten() {
+            let splits: Vec<&str> = line.split(' ').collect();
+            instructions.push((splits[0].to_string(), splits[1].to_string()));
         }
     }
     let mut score_1 = 0;
@@ -43,18 +40,17 @@ fn simplify_action(a: &str) -> i32 {
 
 fn get_score(p1: i32, p2: i32) -> i32 {
     let base_score = p2 + 1;
-    let score = if p1 == p2 {
+    if p1 == p2 {
         base_score + 3
     } else if ((p1 + 1) % 3) == p2 {
         base_score + 6
     } else {
         base_score
-    };
-    score
+    }
 }
 
 fn get_instructed_score(p1: i32, p2: i32) -> i32 {
-    let score = match p2 {
+    match p2 {
         0 => {
             if p1 == 0 {
                 3
@@ -65,6 +61,5 @@ fn get_instructed_score(p1: i32, p2: i32) -> i32 {
         1 => p1 + 4,
         2 => (p1 + 1) % 3 + 7,
         _ => 0,
-    };
-    score
+    }
 }
