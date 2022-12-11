@@ -13,7 +13,6 @@ where
     let mut columns: Vec<VecDeque<char>> = vec![];
     lines.pop();
     for (_, l) in lines.iter().enumerate() {
-        println!("{}", l);
         let chars = l.chars().collect::<Vec<char>>();
         for mut j in 0..chars.len() {
             if chars[j] == ' ' {
@@ -48,6 +47,15 @@ where
         }
     }
 
+    let mut result = vec![];
+    for c in &mut columns {
+        if let Some(v) = c.pop_back() {
+            result.push(v);
+        }
+    }
+    
+    println!("Part 1: {}", result.iter().collect::<String>());
+
     // Part 2
     let mut columns = columns2;
 
@@ -71,5 +79,5 @@ where
             result.push(v);
         }
     }
-    println!("{}", result.iter().collect::<String>());
+    println!("Part 2: {}", result.iter().collect::<String>());
 }

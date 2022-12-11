@@ -28,12 +28,6 @@ where
         let b1 = &backpacks[i * 3];
         let b2 = &backpacks[i * 3 + 1];
         let b3 = &backpacks[i * 3 + 2];
-        println!(
-            "{}\n{}\n{}",
-            b1.iter().collect::<String>(),
-            b2.iter().collect::<String>(),
-            b3.iter().collect::<String>()
-        );
         for c in b1 {
             if b2.contains(c) && b3.contains(c) {
                 sum2 += calc_score(c);
